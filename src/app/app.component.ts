@@ -34,6 +34,10 @@ export class AppComponent implements OnInit {
       (response) => {
         this.customers = response;
         this.sortedCustomers = this.sortCustomersByUserId();
+        this.invitedCustomers = this.inviteCustomersWithin100km(
+          this.sortedCustomers
+        );
+        console.log(this.invitedCustomers);
       },
       (err: HttpErrorResponse) => {
         console.log(err, "http error response");
@@ -49,6 +53,22 @@ export class AppComponent implements OnInit {
     });
   }
 
+  inviteCustomersWithin100km(customerList: Customer[]): Customer[] {
+    let invitedCustomers: Customer[] = [];
+    for (let customer of customerList) {
+      let distanceInKM = this.getDistanceInKm(
+        parseFloat(customer.latitude),
+        parseFloat(customer.longitude),
+        this.centerLatitude,
+        this.centerLongitude,
+        this.earthMeanRadiusKm
+      );
+      if (distanceInKM <= Constants.DISTANCE_LIMIT_IN_KM) {
+        invitedCustomers.push(customer);
+      }
+    }
+    return invitedCustomers;
+  }
 
   getDistanceInKm(
     userLatitude,
