@@ -1,27 +1,21 @@
 # Intercom Interview Assessment
-
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.2.
 
-## Development server
+## Getting Started
+Download and install Node js using this website `https://nodejs.org/en/download/`
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Install the angular cli using this command on your terminal `npm i @angular/cli`
 
-## Code scaffolding
+Run `ng serve` to run server/start the project. Navigate to `http://localhost:4200/`. 
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+This is the output shown below.
 
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+ <img src="src/assets/output-screenshot.png">
 
 ## Running unit tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Run `ng test` to execute the unit tests via [Karma]
 
-## Running end-to-end tests
+The output of the tests is shown below
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+ <img src="src/assets/test-screenshot.png">
