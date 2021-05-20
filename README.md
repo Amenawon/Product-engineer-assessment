@@ -23,5 +23,5 @@ The specs are highlighted with the .spec.ts in the code . i.e `app.component.spe
  <img src="src/assets/test-screenshot.png">
 
 
-## Author
+## Author 
 Amenawon Esezobor
