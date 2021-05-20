@@ -12,6 +12,8 @@ This is the output shown below.
 
  <img src="src/assets/output-screenshot.png">
 
+![Alt text](/src/assets/output-screenshot.png?raw=true "Output")
+
 ## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma]
@@ -19,3 +21,7 @@ Run `ng test` to execute the unit tests via [Karma]
 The output of the tests is shown below
 
  <img src="src/assets/test-screenshot.png">
+
+
+## Author
+Amenawon Esezobor
