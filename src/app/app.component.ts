@@ -10,14 +10,14 @@ import { CustomerService } from "./core/service/customer.service";
   styleUrls: ["./app.component.css"],
 })
 export class AppComponent implements OnInit {
-  title = "Intercom-Interview-Assessment";
-  customers: Customer[];
+   customers: Customer[];
   sortedCustomers: Customer[];
   invitedCustomers: Customer[];
   earthMeanRadiusKm = 6371;
-  centerLatitude = 53.339428;
-  centerLongitude = -6.257664;
+  cityLatitude = 53.339428;
+  cityLongitude = -6.257664;
   constructor(private customerService: CustomerService) {}
+
   ngOnInit(): void {
     this.processCustomerData();
   }
@@ -25,8 +25,9 @@ export class AppComponent implements OnInit {
     try {
       this.getCustomers();
     } catch (error) {
-      return console.log(error, "unable to load customer records");
-    }
+      console.log(error, "unable to load customer records");
+      throw "unable to load customer records";
+       }
   }
 
   getCustomers() {
@@ -41,31 +42,38 @@ export class AppComponent implements OnInit {
       },
       (err: HttpErrorResponse) => {
         console.log(err, "http error response");
+        throw 'Error occured';
       }
     );
   }
 
   sortCustomersByUserId(): Customer[] {
-    return this.customers.sort((a: Customer, b: Customer) => {
-      if (a.user_id < b.user_id) return -1;
-      if (a.user_id > b.user_id) return 1;
-      return 0;
-    });
+    if(this.customers.length > 1){
+      return this.customers.sort((a: Customer, b: Customer) => {
+        if (a.user_id < b.user_id) return -1;
+        if (a.user_id > b.user_id) return 1;
+        return 0;
+      });
+    }
+    return this.customers;
   }
 
   inviteCustomersWithin100km(customerList: Customer[]): Customer[] {
     let invitedCustomers: Customer[] = [];
     for (let customer of customerList) {
+      if(this.isLatLangValid(parseInt(customer.latitude),parseInt(customer.longitude))){
       let distanceInKM = this.getDistanceInKm(
         parseFloat(customer.latitude),
         parseFloat(customer.longitude),
-        this.centerLatitude,
-        this.centerLongitude,
+        this.cityLatitude,
+        this.cityLongitude,
         this.earthMeanRadiusKm
       );
+      console.log(distanceInKM);
       if (distanceInKM <= Constants.DISTANCE_LIMIT_IN_KM) {
         invitedCustomers.push(customer);
       }
+    }
     }
     return invitedCustomers;
   }
@@ -102,4 +110,8 @@ export class AppComponent implements OnInit {
 
     return angleRad * radius;
   }
+
+  isLatLangValid(latitude: number, longitude: number): boolean {
+    return latitude >= -90 && latitude <= 90 ? true : longitude >= -180 && longitude <= 180 ? true :false;
+}
 }
