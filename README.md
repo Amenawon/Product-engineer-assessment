@@ -18,6 +18,8 @@ Run `ng test` to execute the unit tests via [Karma]
 
 The output of the tests is shown below
 
+The specs are highlighted with the .spec.ts in the code . i.e `app.component.spec.ts`
+
  <img src="src/assets/test-screenshot.png">
 
 
