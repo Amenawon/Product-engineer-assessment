@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from "@angular/common/http";
 import { Component, OnInit } from "@angular/core";
+import { Subscription } from "rxjs";
 import { Constants } from "./core/model/Constants";
 import { Customer } from "./core/model/Customer";
 import { CustomerService } from "./core/service/customer.service";
@@ -10,45 +11,44 @@ import { CustomerService } from "./core/service/customer.service";
   styleUrls: ["./app.component.css"],
 })
 export class AppComponent implements OnInit {
-   customers: Customer[];
+  customers: Customer[];
   sortedCustomers: Customer[];
   invitedCustomers: Customer[];
   earthMeanRadiusKm = 6371;
   cityLatitude = 53.339428;
   cityLongitude = -6.257664;
+  customerSub: Subscription;
   constructor(private customerService: CustomerService) {}
 
   ngOnInit(): void {
     this.processCustomerData();
   }
-  processCustomerData() {
+   processCustomerData() {
     try {
       this.getCustomers();
     } catch (error) {
       console.log(error, "unable to load customer records");
       throw "unable to load customer records";
-       }
+    }
   }
 
   getCustomers() {
-    this.customerService.readCustomersFromFile().subscribe(
+    this.customerSub = this.customerService.readCustomersFromFile().subscribe(
       (response) => {
         this.customers = response;
-        this.sortedCustomers = this.sortCustomersByUserId();
-        this.invitedCustomers = this.inviteCustomersWithin100km(
-          this.sortedCustomers
-        );
+        this.sortedCustomers = this.sortCustomersByUserId(); //sort customers in Asc order
+        this.invitedCustomers = this.inviteCustomersWithin100km(this.sortedCustomers);//get invited customers
         console.log(this.invitedCustomers);
       },
       (err: HttpErrorResponse) => {
         console.log(err, "http error response");
-        throw 'Error occured';
+        throw "Error occured";
       }
     );
   }
 
   sortCustomersByUserId(): Customer[] {
-    if(this.customers.length > 1){
+    if (this.customers.length > 1) {
       return this.customers.sort((a: Customer, b: Customer) => {
         if (a.user_id < b.user_id) return -1;
         if (a.user_id > b.user_id) return 1;
@@ -61,40 +61,52 @@ export class AppComponent implements OnInit {
   inviteCustomersWithin100km(customerList: Customer[]): Customer[] {
     let invitedCustomers: Customer[] = [];
     for (let customer of customerList) {
-      if(this.isLatLangValid(parseInt(customer.latitude),parseInt(customer.longitude))){
-      let distanceInKM = this.getDistanceInKm(
-        parseFloat(customer.latitude),
-        parseFloat(customer.longitude),
-        this.cityLatitude,
-        this.cityLongitude,
-        this.earthMeanRadiusKm
-      );
-      console.log(distanceInKM);
-      if (distanceInKM <= Constants.DISTANCE_LIMIT_IN_KM) {
-        invitedCustomers.push(customer);
+      if (
+        // check if the customer has a valid latitude & longitude
+        this.isLatLangValid(
+          // convert to number
+          parseInt(customer.latitude),
+          parseInt(customer.longitude)
+        )
+      ) {
+        // get the distance in kilometre
+        let distanceInKM = this.getDistanceInKm(
+          // convert to number
+          parseFloat(customer.latitude),
+          parseFloat(customer.longitude),
+          this.cityLatitude,
+          this.cityLongitude,
+          this.earthMeanRadiusKm
+        );
+        console.log(distanceInKM);
+        // check each customer against the maximum distance in km and push to an array
+        if (distanceInKM <= Constants.DISTANCE_LIMIT_IN_KM) {
+          invitedCustomers.push(customer);
+        }
       }
     }
-    }
-    return invitedCustomers;
+    return invitedCustomers; // return the list of invited customers
   }
 
+  // I used this https://en.wikipedia.org/wiki/Great-circle_distance as reference to get distance in km
   getDistanceInKm(
-    userLatitude,
-    userLongitude,
-    cityLatitude,
-    cityLongitude,
-    radius
+    userLatitude: number,
+    userLongitude: number,
+    cityLatitude: number,
+    cityLongitude: number,
+    radius: number
   ): number {
-    const phi1 = (userLatitude * Math.PI) / 180;
-    const lambda1 = (userLongitude * Math.PI) / 180;
-    const phi2 = (cityLatitude * Math.PI) / 180;
-    const lambda2 = (cityLongitude * Math.PI) / 180;
+    const phi1 = (userLatitude * Math.PI) / 180; //get the userlatPhi value by multiplying the user latitude by PI and divide by 180
+    const lambda1 = (userLongitude * Math.PI) / 180; //get the userlongPhi value by multiplying the city longitude by PI and divide by 180
+    const phi2 = (cityLatitude * Math.PI) / 180; //multiply the city latitude by PI and divide by 180
+    const lambda2 = (cityLongitude * Math.PI) / 180; //multiply the city longitude by PI and divide by 180
 
+    //get the delta value by checking if the user longitude is greater than city longitude
     const deltaLambda = Math.abs(
       lambda1 > lambda2 ? lambda1 - lambda2 : lambda2 - lambda1
     );
 
-     const angleRad = Math.atan2(
+    const angleRad = Math.atan2(
       Math.sqrt(
         Math.pow(Math.cos(phi2) * Math.sin(deltaLambda), 2) +
           Math.pow(
@@ -112,6 +124,16 @@ export class AppComponent implements OnInit {
   }
 
   isLatLangValid(latitude: number, longitude: number): boolean {
-    return latitude >= -90 && latitude <= 90 ? true : longitude >= -180 && longitude <= 180 ? true :false;
-}
+    return latitude >= -90 && latitude <= 90
+      ? true
+      : longitude >= -180 && longitude <= 180
+      ? true
+      : false;
+  }
+
+  ngOnDestroy(): void {
+    if (this.customerSub) {
+      this.customerSub.unsubscribe();
+    }
+  }
 }

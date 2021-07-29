@@ -70,6 +70,7 @@ describe("AppComponent", () => {
     expect(customerMockService.readCustomersFromFile).toHaveBeenCalled();
     expect(component.customers).toEqual(customerMockData);
   });
+  
   it("should  expect customers to be sorted by user id ", () => {
     spyOn(customerMockService, "readCustomersFromFile").and.callThrough();
     component.getCustomers();
