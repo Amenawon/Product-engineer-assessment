@@ -1,10 +1,14 @@
-# Intercom Interview Assessment
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.2.
+
 
 ## Getting Started
 Download and install Node js using this website `https://nodejs.org/en/download/`
 
 Install the angular cli using this command on your terminal `npm i @angular/cli`
+
+The entry point of the project is located in `https://github.com/Amenawon/Product-engineer-assessment/blob/main/src/app/app.component.ts`
+
+The view/ui is located in `https://github.com/Amenawon/Product-engineer-assessment/blob/main/src/app/app.component.html`
 
 Run `ng serve` to run server/start the project. Navigate to `http://localhost:4200/`. 
 
