@@ -96,28 +96,28 @@ export class AppComponent implements OnInit {
     cityLongitude: number,
     radius: number
   ): number {
-    const phi1 = (userLatitude * Math.PI) / 180; //get the userlatPhi value by multiplying the user latitude by PI and divide by 180
-    const lambda1 = (userLongitude * Math.PI) / 180; //get the userlongPhi value by multiplying the city longitude by PI and divide by 180
-    const phi2 = (cityLatitude * Math.PI) / 180; //multiply the city latitude by PI and divide by 180
-    const lambda2 = (cityLongitude * Math.PI) / 180; //multiply the city longitude by PI and divide by 180
+    const userLatitudePhi = (userLatitude * Math.PI) / 180; //get the userlatPhi value by multiplying the user latitude by PI and divide by 180
+    const userLongitudeLambda = (userLongitude * Math.PI) / 180; //get the userlongPhi value by multiplying the city longitude by PI and divide by 180
+    const cityLatitudePhi = (cityLatitude * Math.PI) / 180; //multiply the city latitude by PI and divide by 180
+    const cityLongitudeLambda = (cityLongitude * Math.PI) / 180; //multiply the city longitude by PI and divide by 180
 
     //get the delta value by checking if the user longitude is greater than city longitude
     const deltaLambda = Math.abs(
-      lambda1 > lambda2 ? lambda1 - lambda2 : lambda2 - lambda1
+      userLongitudeLambda > cityLongitudeLambda ? userLongitudeLambda - cityLongitudeLambda : cityLongitudeLambda - userLongitudeLambda
     );
 
     const angleRad = Math.atan2(
       Math.sqrt(
-        Math.pow(Math.cos(phi2) * Math.sin(deltaLambda), 2) +
+        Math.pow(Math.cos(cityLatitudePhi) * Math.sin(deltaLambda), 2) +
           Math.pow(
-            Math.cos(phi1) * Math.sin(phi2) -
-              Math.sin(phi1) * Math.cos(phi2) * Math.cos(deltaLambda),
+            Math.cos(userLatitudePhi) * Math.sin(cityLatitudePhi) -
+              Math.sin(userLatitudePhi) * Math.cos(cityLatitudePhi) * Math.cos(deltaLambda),
             2
           )
       ),
 
-      Math.sin(phi1) * Math.sin(phi2) +
-        Math.cos(phi1) * Math.cos(phi2) * Math.cos(deltaLambda)
+      Math.sin(userLatitudePhi) * Math.sin(cityLatitudePhi) +
+        Math.cos(userLatitudePhi) * Math.cos(cityLatitudePhi) * Math.cos(deltaLambda)
     );
 
     return angleRad * radius;
